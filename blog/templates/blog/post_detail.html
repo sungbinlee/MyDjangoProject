@@ -9,4 +9,9 @@
     {{ post.writer }}</p>
   <p>작성일:
     {{ post.created_at }}</p>
+  <a href="{% url 'blog:edit' pk=post.pk %}">Edit</a>
+  <form action="{% url 'blog:delete' pk=post.pk %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="삭제">
+  </form>
 {% endblock %}
