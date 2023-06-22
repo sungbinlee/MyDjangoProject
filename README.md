@@ -4,29 +4,29 @@
 ## 6월 22일
 ### 작업내용:
 1. 템플릿을 작성하였습니다.
-- 폼을 통해 `title`과 `content` 필드를 입력받아 수정하는 HTML 폼을 작성하였습니다.
+   - 폼을 통해 `title`과 `content` 필드를 입력받아 수정하는 HTML 폼을 작성하였습니다.
 
 2. `UpdateView`를 상속받은 Update 클래스를 작성하였습니다.
-- Post 모델을 대상으로 하는 업데이트 기능을 처리합니다.
-- 'blog/post_edit.html' 템플릿을 사용합니다.
-- `title`과 `content` 필드를 포함하는 폼을 생성합니다.
-- 초기값을 설정하기 위해 `get_initial()` 메서드를 오버라이드하였습니다.
-- `get_success_url()` 메서드를 사용하여 성공 시 이동할 URL을 지정하였습니다.
+   - Post 모델을 대상으로 하는 업데이트 기능을 처리합니다.
+   - 'blog/post_edit.html' 템플릿을 사용합니다.
+   - `title`과 `content` 필드를 포함하는 폼을 생성합니다.
+   - 초기값을 설정하기 위해 `get_initial()` 메서드를 오버라이드하였습니다.
+   - `get_success_url()` 메서드를 사용하여 성공 시 이동할 URL을 지정하였습니다.
 
 3. DeleteView를 상속받은 Delete 클래스를 작성하였습니다.
-- `Post` 모델을 대상으로 하는 삭제 기능을 처리합니다.
-= 삭제 후 이동할 URL을 `reverse_lazy()`를 사용하여 설정하였습니다.
+   - `Post` 모델을 대상으로 하는 삭제 기능을 처리합니다.
+   - 삭제 후 이동할 URL을 `reverse_lazy()`를 사용하여 설정하였습니다.
 
 4. `DetailView` 클래스를 작성하였습니다.
-- `post_id`에 해당하는 `Post` 객체와 관련된 작업을 처리합니다.
+   - `post_id`에 해당하는 `Post` 객체와 관련된 작업을 처리합니다.
 
 5. `CommentWrite` 클래스를 작성하였습니다.
-- 댓글 작성 기능을 처리합니다.
-- `CommentForm`을 사용하여 댓글을 작성하고, 작성한 댓글을 저장합니다.
+   - 댓글 작성 기능을 처리합니다.
+   - `CommentForm`을 사용하여 댓글을 작성하고, 작성한 댓글을 저장합니다.
 
 6. URL 패턴을 설정하였습니다.
-- `edit` 패턴은 `Update` 뷰와 연결되어 글 편집 기능을 제공합니다.
-- `delete` 패턴은 `Delete` 뷰와 연결되어 글 삭제 기능을 제공합니다.
+   - `edit` 패턴은 `Update` 뷰와 연결되어 글 편집 기능을 제공합니다.
+   - `delete` 패턴은 `Delete` 뷰와 연결되어 글 삭제 기능을 제공합니다.
 
 ### 학습내용정리:
 - Django의 클래스 기반 뷰 사용: UpdateView, DeleteView를 상속하여 업데이트 및 삭제 기능을 구현하였습니다. 이를 통해 Django의 제네릭 뷰를 활용하여 CRUD(Create, Read, Update, Delete) 기능을 간편하게 처리할 수 있습니다.
