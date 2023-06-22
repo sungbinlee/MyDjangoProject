@@ -1,9 +1,41 @@
 # 장고 연습용 레포지토리 (Django Practice Repository)
 이 레포지토리는 장고(Django) 연습을 위해 만들어진 레포지토리입니다. 이 레포지토리를 통해 장고의 기본 개념과 개발 방법을 익히고, 각 작업일마다 어떤 이론을 학습하고 어떤 실습을 진행했는지에 대한 내용을 상세하게 담고 있습니다. 
 
+## 6월 22일
+### 작업내용:
+1. 템플릿을 작성하였습니다.
+- 폼을 통해 `title`과 `content` 필드를 입력받아 수정하는 HTML 폼을 작성하였습니다.
+
+2. `UpdateView`를 상속받은 Update 클래스를 작성하였습니다.
+- Post 모델을 대상으로 하는 업데이트 기능을 처리합니다.
+- 'blog/post_edit.html' 템플릿을 사용합니다.
+- `title`과 `content` 필드를 포함하는 폼을 생성합니다.
+- 초기값을 설정하기 위해 `get_initial()` 메서드를 오버라이드하였습니다.
+- `get_success_url()` 메서드를 사용하여 성공 시 이동할 URL을 지정하였습니다.
+
+3. DeleteView를 상속받은 Delete 클래스를 작성하였습니다.
+- `Post` 모델을 대상으로 하는 삭제 기능을 처리합니다.
+= 삭제 후 이동할 URL을 `reverse_lazy()`를 사용하여 설정하였습니다.
+
+4. `DetailView` 클래스를 작성하였습니다.
+- `post_id`에 해당하는 `Post` 객체와 관련된 작업을 처리합니다.
+
+5. `CommentWrite` 클래스를 작성하였습니다.
+- 댓글 작성 기능을 처리합니다.
+- `CommentForm`을 사용하여 댓글을 작성하고, 작성한 댓글을 저장합니다.
+
+6. URL 패턴을 설정하였습니다.
+- `edit` 패턴은 `Update` 뷰와 연결되어 글 편집 기능을 제공합니다.
+- `delete` 패턴은 `Delete` 뷰와 연결되어 글 삭제 기능을 제공합니다.
+
+### 학습내용정리:
+- Django의 클래스 기반 뷰 사용: UpdateView, DeleteView를 상속하여 업데이트 및 삭제 기능을 구현하였습니다. 이를 통해 Django의 제네릭 뷰를 활용하여 CRUD(Create, Read, Update, Delete) 기능을 간편하게 처리할 수 있습니다.
+- 상속과 오버라이딩: 클래스를 상속하고 필요한 메서드를 오버라이딩하여 원하는 동작을 구현할 수 있습니다. `get_initial()`과 `get_success_url()` 메서드를 오버라이딩하여 초기값 설정과 성공 시 이동할 URL을 지정하는 방법을 익힐 수 있습니다.
+- 데이터베이스 조작: `Post`와 `Comment` 모델을 조작하는 과정을 통해 데이터베이스 연동 및 객체 생성, 저장, 삭제 등을 학습할 수 있습니다.
+
 ## 6월 21일
 ### 작업내용:
-1. blog/forms.py 파일에 PostForm 클래스를 정의하였습니다.
+1. blog/forms.py 파일에 `PostForm` 클래스를 정의하였습니다.
 2. 데이터베이스 값을 생성했습니다.
 3. 블로그 글 URL 구성했습니다. 
    - 블로그 글의 URL은 일반적으로 특정 패턴을 따릅니다. 예를 들어, http://www.domain.co.kr/blog는 블로그 글 목록을 보여주는 페이지를 나타내며, http://www.domain.co.kr/blog/detail/1은 ID가 1인 특정 블로그 글의 상세 페이지를 나타냅니다. URL 패턴을 설정하고 해당 패턴에 따라 뷰와 매핑하여 원하는 동작을 구현할 수 있습니다.
@@ -11,9 +43,10 @@
 ### 학습내용정리:
 - 모델 폼(ModelForm)을 사용하여 데이터 모델에 대한 폼을 생성하는 방법을 학습했습니다.
 - URL 패턴을 정의하고 뷰를 연결하여 웹 애플리케이션의 다양한 기능을 구현하는 방법을 알아보았습니다.
-- 클래스 기반 뷰(ListView, CreateView, DetailView)를 사용하여 재사용 가능한 뷰를 작성하는 방법을 익혔습니다.
+- 클래스 기반 뷰(`ListView`, `CreateView`, `DetailView`)를 사용하여 재사용 가능한 뷰를 작성하는 방법을 익혔습니다.
 - 템플릿 파일을 작성하고, 템플릿 확장과 블록 설정을 사용하여 템플릿 파일을 구조화하는 방법을 배웠습니다.
 - 폼 유효성 검사: Django는 폼 유효성 검사 기능을 제공하여 서버 측에서 클라이언트에서 전달된 값들에 대한 유효성을 검증할 수 있습니다.
+- 폼 처리: `CommentForm`을 사용하여 댓글 작성 폼을 구현하였습니다. 이를 통해 사용자의 입력을 받고 유효성 검사를 수행할 수 있습니다. 폼을 생성하고 처리하는 방법을 익힐 수 있습니다.
 
 ## 6월 20일
 오늘은 Django 개발 세팅을 완료하고, 프로젝트를 생성하고 앱을 생성했습니다. 또한, 기능 정리, 데이터베이스 모델 작성, URLs 설정, Views 작성까지 진행했습니다.
@@ -27,14 +60,15 @@
 
 |blog|request|method|
 |---|---|---|
-|1. 글쓰기|/posts/write|post|
-|2. 게시판(목록)|/posts/board|get|
-|3. 글 수정|/posts/edit|put/post|
-|4. 글 삭제|/posts/delete|delete/post|
-|5. 댓글 쓰기|/comment/write|post|
-|6. 댓글 삭제|/comment/delete|delete/post|
-|7. 태그(달기)|/tag|post|
-
+|1. 글쓰기|/blog/write|post|
+|2. 게시판(목록)|/blog/board|get|
+|3. 글 상세 조회|/blog/detail/1|get|
+|4. 글 수정|/blog/edit|put/post|
+|5. 글 삭제|/blog/delete|delete/post|
+|6. 댓글 조회|/comments|get|
+|7. 댓글 쓰기|/comment/write|post|
+|8. 댓글 삭제|/comment/delete|delete/post|
+|9. 태그(달기)|/tag|post|
 
 #### 2. Models(데이터베이스) 작성: 관계형 데이터베이스를 구성하기 위해 데이터 모델을 작성했습니다.
    - 블로그 글(Post)
