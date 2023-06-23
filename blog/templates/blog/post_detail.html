@@ -1,5 +1,4 @@
 {% extends 'blog/base.html' %}
-
 {% block content %}
   <h1>제목:
     {{ post.title }}</h1>
@@ -9,9 +8,65 @@
     {{ post.writer }}</p>
   <p>작성일:
     {{ post.created_at }}</p>
+
   <a href="{% url 'blog:edit' pk=post.pk %}">Edit</a>
   <form action="{% url 'blog:delete' pk=post.pk %}" method="post">
     {% csrf_token %}
     <input type="submit" value="삭제">
   </form>
-{% endblock %}
+  <hr>
+  <!-- 작성화면 -->
+  <h3>댓글</h3>
+  <form method="post" action="{% url 'blog:cm-write' pk=post.pk %}">
+    <!-- 내용, 작성시간, 삭제 버튼-->
+    {% csrf_token %}
+    {{ comment_form.content }}
+    <input type="submit">
+  </form>
+
+  <!-- comments -->
+  <!-- if -->
+  {% if comments %}
+    <ul>
+      {% for comment in comments %}
+        <li>
+          <p>{{ comment.content }}
+            / 작성시간:
+            {{ comment.created_at }}
+            <form method="post" action="{% url 'blog:cm-delete' pk=comment.pk %}">
+              {% csrf_token %}
+              <input type="submit" value="삭제">
+            </form>
+          </p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>댓글이 없습니다.</p>
+  {% endif %}
+  <hr>
+
+  <!-- 태그 작성 화면 -->
+  <h3>해시태그<h3>
+      <form action="{% url 'blog:tag-write' pk=post.pk %}" method="post">
+        {% csrf_token %}
+        {{ hasgtag_form.name }}
+        <input type="submit" value="태그 작성">
+      </form>
+
+      {% if hashtags %}
+        <ul>
+          {% for hashtag in hashtags %}
+            <li>
+              #{{ hashtag.name }}
+              <form method="post" action="{% url 'blog:tag-delete' pk=hashtag.pk %}">
+                {% csrf_token %}
+                <input type="submit" value="삭제">
+              </form>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>태그가 없습니다</p>
+      {% endif %}
+    {% endblock %}

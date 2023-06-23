@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import View
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
-from .models import Post, Comment
-from .forms import PostForm, CommentForm
+from .models import Post, Comment, HashTag
+from .forms import PostForm, CommentForm, HashTagForm
 from django.urls import reverse_lazy, reverse
 
 # Create your views here.
@@ -90,21 +90,74 @@ class Delete(DeleteView):
 
 
 class DetailView(View):
-    def get():
-        pass
-    def post():
-        pass
+    def get(self, request, pk):
+        # 글 가져옴
+        post = Post.objects.get(pk=pk)
+
+        comments = Comment.objects.filter(post=post)
+        hashtags = HashTag.objects.filter(post=post)
+
+        # 태그 form        
+        hashtag_form = HashTagForm()
+
+        # 댓글 form        
+        comment_form = CommentForm()
+
+        context = {
+            'post': post,
+            'comments': comments,
+            'hashtags': hashtags,
+            'comment_form': comment_form,
+            'hasgtag_form': hashtag_form,
+        }
+
+        return render(request, 'blog/post_detail.html', context)
+        # 댓글
 
 
 ### Comment
 class CommentWrite(View):
-    def post(self, request, post_id):
+    def post(self, request, pk):
         form = CommentForm(request.POST)
         if form.is_valid():
             # 사용자에게 댓글 내용을 받아옴
             content = form.cleaned_data['content']
             # 해당 아이디에 해당하는 글 불러옴
-            post = Post.objects.get(pk=post_id)
+            post = Post.objects.get(pk=pk)
             # 댓글 객체 생성
             comment = Comment.objects.create(post=post, content=content)
-            return redirect('blog:detail', pk=post_id)
+            return redirect('blog:detail', pk=pk)
+        
+
+class CommentDelete(View):
+    def post(self, reqeust, pk):
+        # 커멘트 객체 가져오기
+        comment = Comment.objects.get(pk=pk)
+
+        post_id = comment.post.id
+        # 댓글 삭제 로직 구현
+        comment.delete()
+
+        return redirect('blog:detail', pk=post_id)
+
+
+class HashTagWrite(View):
+    def post(self, request, pk):
+        form = HashTagForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            post = Post.objects.get(pk=pk)
+            hashtag = HashTag.objects.create(post=post, name=name)
+            return redirect('blog:detail', pk=pk)
+
+
+class HashTagDelete(View):
+    def post(self, reqeust, pk):
+        # 커멘트 객체 가져오기
+        hasgtag = HashTag.objects.get(pk=pk)
+
+        post_id = hasgtag.post.id
+        # 댓글 삭제 로직 구현
+        hasgtag.delete()
+
+        return redirect('blog:detail', pk=post_id)
