@@ -98,11 +98,6 @@
 #### 3. URLs 설정: URL 매핑을 위해 URLs를 설정했습니다.
 `makemigrations`는 모델 변경 사항을 추적하여 마이그레이션 파일을 생성하고, `migrate`는 마이그레이션 파일을 실행하여 실제 데이터베이스 스키마를 변경합니다.
 
-
-
-
-
-
 #### 4. Views 작성: 웹 요청을 받고 처리한 후, 데이터베이스에서 필요한 값을 가져와 가공하여 응답 형태로 반환하는 역할을 합니다. Django에서는 Function-Based Views (FBV)와 Class-Based Views (CBV) 두 가지 방식으로 Views를 작성할 수 있습니다.
 
 ### 데이터베이스(ORM)
