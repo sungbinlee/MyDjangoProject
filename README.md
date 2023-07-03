@@ -2,6 +2,25 @@
 
 이 레포지토리는 장고(Django) 연습을 위해 만들어진 레포지토리입니다. 이 레포지토리를 통해 장고의 기본 개념과 개발 방법을 익히고, 각 작업일마다 어떤 이론을 학습하고 어떤 실습을 진행했는지에 대한 내용을 상세하게 담고 있습니다.
 
+## 7월 3일
+
+### 작업내용:
+1. `User` 모델 커스터마이즈: `AbstractUser` 모델을 상속받아 `User` 모델을 정의하였습니다. 이 모델은 추가적인 필드로 이메일(`email`), 이름(`name`), 비밀번호(`password`) 등을 포함하고 있습니다.
+
+2. `UserManager` 클래스: `BaseUserManager`를 상속받은 `UserManager` 클래스를 정의하였습니다. 이 클래스는 사용자 생성과 관련된 메서드를 제공하며, `_create_user()` 메서드를 통해 사용자를 생성합니다. `create_user()` 메서드와 `create_superuser()` 메서드를 구현하여 일반 사용자와 슈퍼유저를 생성할 수 있도록 하였습니다.
+
+3. `RegisterForm`과 LoginForm: UserCreationForm을 상속받은 RegisterForm과 AuthenticationForm을 상속받은 LoginForm 폼을 정의하였습니다. 
+
+4. `Index` 뷰: `Index` 클래스 기반 뷰를 작성하여 인덱스 페이지를 재구현하였습니다. 해당 뷰는 로그인된 사용자의 경우에만 접근 가능하도록 `LoginRequiredMixin`을 사용하였습니다.
+
+5. `Write` 뷰: `Write` 클래스 기반 뷰를 작성하여 글 작성 기능을 재구현하였습니다. 이 뷰도 로그인된 사용자만 접근 가능하도록 `LoginRequiredMixin`을 사용하였습니다. 글 작성 폼을 템플릿에 렌더링하고, 유효한 데이터인 경우에만 저장하도록 처리하였습니다.
+
+6. `Post` 모델: `Post` 모델을 재정의하였습니다. 작성자와 `User` 모델을 외래키로 연결하였습니다.
+
+### 학습내용정리:
+1. 커스텀 사용자 모델(Custom User Model) 구현: Django의 기본 User 모델을 커스터마이즈하여 추가 필드를 포함한 사용자 모델을 생성하였습니다. UserManager 클래스를 통해 사용자 생성, 수정, 삭제와 관련된 도우미 메서드를 구현하였습니다.
+2. 회원가입(RegisterForm)과 로그인(LoginForm) 폼 정의: Django의 폼(forms)을 사용하여 사용자 등록과 로그인을 위한 폼을 정의했습니다. RegisterForm은 UserCreationForm을 확장하고, LoginForm은 AuthenticationForm을 확장하여 사용자로부터 필요한 정보를 입력받을 수 있도록 했습니다.
+
 ## 6월 26일
 
 ### 작업내용:
