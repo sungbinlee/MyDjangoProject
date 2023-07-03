@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import View
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Post, Comment, HashTag
 from .forms import PostForm, CommentForm, HashTagForm
 from django.urls import reverse_lazy, reverse
@@ -15,11 +16,13 @@ from django.urls import reverse_lazy, reverse
 #         return HttpResponse('Index page POST')
 #     else:
 #         return HttpResponse('Invalid method')
-    
-### 포스트
+
+# 포스트
+
+
 class Index(View):
     def get(self, request):
-        # return HttpResponse('index page Get class') 
+        # return HttpResponse('index page Get class')
 
         # 데이터베이스에 접근해서 값을 가져와야 합니다.
         # 게시판에 글들을 보여줘야하기 떄문에 데이터베이스에서 "값 조회" all()
@@ -29,35 +32,58 @@ class Index(View):
         context = {
             "posts": post_objs
         }
-        return render(request, 'blog/board.html', context)
+        return render(request, 'blog/post_list.html', context)
 
 
-def write(request):
-    if request.method == 'POST':
-        # form 확인
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save()
-            return redirect('blog:list')
-        
-    form = PostForm()
-    return render(request, 'blog/write.html', {'form': form})
+# def write(request):
+#     if request.method == 'POST':
+#         # form 확인
+#         form = PostForm(request.POST)
+#         if form.is_valid():
+#             post = form.save()
+#             return redirect('blog:list')
+
+#     form = PostForm()
+#     return render(request, 'blog/write.html', {'form': form})
 
 
 # Django 자체의 클래스 뷰 기능도 강력, 편리
 # model, template_name, context_object_name,
 # paginate_by, form_class, form_valid(), get_queryset()
 # django.views.generitc - > ListView
-class List(ListView):
-    model = Post # 모델 
-    template_name = 'blog/post_list.html' # 템플릿
-    context_object_name = 'posts' # 변수 값의 이름
+# class List(ListView):
+#     model = Post  # 모델
+#     template_name = 'blog/post_list.html'  # 템플릿
+#     context_object_name = 'posts'  # 변수 값의 이름
 
 
-class Write(CreateView):
-    model = Post # 모델
-    form_class = PostForm # 폼
-    success_url = reverse_lazy('blog:list') # 성공시 보내줄 url
+# class Write(CreateView):
+#     model = Post  # 모델
+#     form_class = PostForm  # 폼
+#     success_url = reverse_lazy('blog:list')  # 성공시 보내줄 url
+
+
+class Write(LoginRequiredMixin, View):
+
+    def get(self, request):
+        form = PostForm()
+        context = {
+            'form': form
+        }
+        return render(request, 'blog/post_form.html', context)
+
+    def post(self, request):
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.writer = request.user
+            post.save()
+            return redirect('blog:list')
+        form.add_error(None, '폼이 유효하지 않습니다.')
+        context = {
+            'form': form
+        }
+        return render(request, 'blog/post_form.html')
 
 
 class Detail(DetailView):
@@ -72,17 +98,18 @@ class Update(UpdateView):
     fields = ['title', 'content']
     # success_url = reverse_lazy('blog:list')
     # initial 기능 사용 -> form에 값을 미리 넣어주기 위해서
+
     def get_initial(self):
-        initial = super().get_initial() # UpdateView(generic view)에서 제공하는 initial(딕셔너리)
-        post = self.get_object() # pk 기반으로 객체를 가져옴
+        initial = super().get_initial()  # UpdateView(generic view)에서 제공하는 initial(딕셔너리)
+        post = self.get_object()  # pk 기반으로 객체를 가져옴
         initial['title'] = post.title
         initial['content'] = post.content
         return initial
-    
-    def get_success_url(self): #
-        post = self.get_object() # pk 기반으로 현재 객체 가져오기
+
+    def get_success_url(self):
+        post = self.get_object()  # pk 기반으로 현재 객체 가져오기
         return reverse('blog:detail', kwargs={'pk': post.pk})
-    
+
 
 class Delete(DeleteView):
     model = Post
@@ -97,10 +124,10 @@ class DetailView(View):
         comments = Comment.objects.filter(post=post)
         hashtags = HashTag.objects.filter(post=post)
 
-        # 태그 form        
+        # 태그 form
         hashtag_form = HashTagForm()
 
-        # 댓글 form        
+        # 댓글 form
         comment_form = CommentForm()
 
         context = {
@@ -115,7 +142,7 @@ class DetailView(View):
         # 댓글
 
 
-### Comment
+# Comment
 class CommentWrite(View):
     def post(self, request, pk):
         form = CommentForm(request.POST)
@@ -127,7 +154,7 @@ class CommentWrite(View):
             # 댓글 객체 생성
             comment = Comment.objects.create(post=post, content=content)
             return redirect('blog:detail', pk=pk)
-        
+
 
 class CommentDelete(View):
     def post(self, reqeust, pk):
