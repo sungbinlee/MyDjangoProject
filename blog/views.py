@@ -86,34 +86,65 @@ class Write(LoginRequiredMixin, View):
         return render(request, 'blog/post_form.html')
 
 
-class Detail(DetailView):
-    model = Post
-    template_name = 'blog/post_detail.html'
-    context_object_name = 'post'
+# class Detail(DetailView):
+#     model = Post
+#     template_name = 'blog/post_detail.html'
+#     context_object_name = 'post'
 
 
-class Update(UpdateView):
-    model = Post
-    template_name = 'blog/post_edit.html'
-    fields = ['title', 'content']
-    # success_url = reverse_lazy('blog:list')
-    # initial 기능 사용 -> form에 값을 미리 넣어주기 위해서
+# class Update(UpdateView):
+#     model = Post
+#     template_name = 'blog/post_edit.html'
+#     fields = ['title', 'content']
+#     # success_url = reverse_lazy('blog:list')
+#     # initial 기능 사용 -> form에 값을 미리 넣어주기 위해서
 
-    def get_initial(self):
-        initial = super().get_initial()  # UpdateView(generic view)에서 제공하는 initial(딕셔너리)
-        post = self.get_object()  # pk 기반으로 객체를 가져옴
-        initial['title'] = post.title
-        initial['content'] = post.content
-        return initial
+#     def get_initial(self):
+#         initial = super().get_initial()  # UpdateView(generic view)에서 제공하는 initial(딕셔너리)
+#         post = self.get_object()  # pk 기반으로 객체를 가져옴
+#         initial['title'] = post.title
+#         initial['content'] = post.content
+#         return initial
 
-    def get_success_url(self):
-        post = self.get_object()  # pk 기반으로 현재 객체 가져오기
-        return reverse('blog:detail', kwargs={'pk': post.pk})
+#     def get_success_url(self):
+#         post = self.get_object()  # pk 기반으로 현재 객체 가져오기
+#         return reverse('blog:detail', kwargs={'pk': post.pk})
+
+class Update(View):
+    def get(self, request, pk):  # post_id
+        post = Post.objects.get(pk=pk)
+        form = PostForm(initial={'title': post.title, 'content': post.content})
+        context = {
+            'form': form,
+            'post': post
+        }
+        return render(request, 'blog/post_edit.html', context)
+
+    def post(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        form = PostForm(request.POST)
+        if form.is_valid():
+            post.title = form.cleaned_data['title']
+            post.content = form.cleaned_data['content']
+            post.save()
+            return redirect('blog:detail', pk=pk)
+
+        form.add_error('폼이 유효하지 않습니다.')
+        context = {
+            'form': form
+        }
+        return render(request, 'blog/post_edit.html', context)
+
+# class Delete(DeleteView):
+#     model = Post
+#     success_url = reverse_lazy('blog:list')
 
 
-class Delete(DeleteView):
-    model = Post
-    success_url = reverse_lazy('blog:list')
+class Delete(View):
+    def post(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        post.delete()
+        return redirect('blog:list')
 
 
 class DetailView(View):
@@ -151,9 +182,18 @@ class CommentWrite(View):
             content = form.cleaned_data['content']
             # 해당 아이디에 해당하는 글 불러옴
             post = Post.objects.get(pk=pk)
+            # 유저 정보 가져오기
+            writer = request.user
             # 댓글 객체 생성
-            comment = Comment.objects.create(post=post, content=content)
+            comment = Comment.objects.create(
+                post=post, content=content, writer=writer)
             return redirect('blog:detail', pk=pk)
+
+        form.add_error('폼이 유효하지 않습니다.')
+        context = {
+            'form': form
+        }
+        return render(request, 'blog/form_error.html', context)
 
 
 class CommentDelete(View):
@@ -169,13 +209,22 @@ class CommentDelete(View):
 
 
 class HashTagWrite(View):
+
     def post(self, request, pk):
         form = HashTagForm(request.POST)
         if form.is_valid():
             name = form.cleaned_data['name']
             post = Post.objects.get(pk=pk)
-            hashtag = HashTag.objects.create(post=post, name=name)
-            return redirect('blog:detail', pk=pk)
+            writer = request.user
+            hashtag = HashTag.objects.create(
+                post=post, name=name, writer=writer)
+            return redirect('blog:detail', post_id=pk)
+
+        form.add_error(None, '폼이 유효하지 않습니다.')
+        context = {
+            'form': form,
+        }
+        return render(request, 'blog/form_error.html', context)
 
 
 class HashTagDelete(View):
