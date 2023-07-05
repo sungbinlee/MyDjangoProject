@@ -11,14 +11,19 @@ from .forms import RegisterForm, LoginForm
 # 로그인
 # 로그아웃
 
-### Registration
+# Registration
+
+
 class Registration(View):
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('blog:list')
         # 회원가입 페이지
         # 정보를 입력할 폼을 보여주어야 한다.
         form = RegisterForm()
         context = {
-            'form': form
+            'form': form,
+            'title': 'User'
         }
         return render(request, 'user/user_register.html', context)
 
@@ -27,10 +32,10 @@ class Registration(View):
         if form.is_valid():
             user = form.save()
             # 로그인한 다음 이동
-            return redirect('blog:list')
+            return redirect('user:login')
 
 
-### Login
+# Login
 class Login(View):
     def get(self, request):
         if request.user.is_authenticated:
@@ -38,7 +43,8 @@ class Login(View):
 
         form = LoginForm()
         context = {
-            'form': form
+            'form': form,
+            'title': 'User'
         }
         return render(request, 'user/user_login.html', context)
 
@@ -46,26 +52,28 @@ class Login(View):
         if request.user.is_authenticated:
             return redirect('blog:list')
 
-        form = LoginForm(request.POST)
+        form = LoginForm(request, request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
+            email = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            user = authenticate(username=email, password=password) # True, False
+            user = authenticate(
+                username=email, password=password)  # True, False
 
             if user:
                 login(request, user)
                 return redirect('blog:list')
 
-            form.add_error(None, '아이디가 없습니다.')
+        form.add_error(None, '아이디가 없습니다.')
 
         context = {
-            'form': form
+            'form': form,
+            'title': 'User'
         }
 
         return render(request, 'user/user_login.html', context)
 
 
-### Logout
+# Logout
 class Logout(View):
     def get(self, request):
         logout(request)
